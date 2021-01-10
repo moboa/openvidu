@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
 
+import com.google.cloud.storage.Storage;
+import com.google.cloud.storage.StorageOptions;
 import io.openvidu.server.recording.*;
 import org.bouncycastle.util.Arrays;
 import org.kurento.jsonrpc.internal.server.config.JsonRpcConfiguration;
@@ -247,6 +249,12 @@ public class OpenViduServer implements JsonRpcConfigurer {
 		ApiRestPathRewriteFilter apiRestPathRewriteFilter = new ApiRestPathRewriteFilter();
 		registrationBean.setFilter(apiRestPathRewriteFilter);
 		return registrationBean;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public Storage googleCloudStorageClient() {
+		return StorageOptions.getDefaultInstance().getService();
 	}
 
 	@Override

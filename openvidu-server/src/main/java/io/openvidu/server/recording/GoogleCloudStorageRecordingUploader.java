@@ -1,9 +1,6 @@
 package io.openvidu.server.recording;
 
-import com.google.cloud.storage.BlobId;
-import com.google.cloud.storage.BlobInfo;
-import com.google.cloud.storage.Storage;
-import com.google.cloud.storage.StorageException;
+import com.google.cloud.storage.*;
 import io.openvidu.server.config.OpenviduConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +27,7 @@ public class GoogleCloudStorageRecordingUploader implements RecordingUploader {
 
     @Override
     public void uploadRecording(Recording recording, Runnable successCallback, Runnable errorCallback) {
+        log.info("Uploading recording {} for session {}", recording.getId(), recording.getSessionId());
         recordingsBeingCurrentlyUploaded.add(recording.getId());
 
         String bucketName = config.getGcpStorageBucketName();
@@ -39,11 +37,12 @@ public class GoogleCloudStorageRecordingUploader implements RecordingUploader {
         try {
             gcpStorage.create(blobInfo, Files.readAllBytes(Paths.get(filePath)));
         } catch (StorageException | IOException e) {
-            log.error(e.getMessage(), e);
-            errorCallback.run();
+            log.error("Error uploading recording {} for session {}", recording.getId(), recording.getSessionId());
         } finally {
             recordingsBeingCurrentlyUploaded.remove(recording.getId());
+            errorCallback.run();
         }
+        log.info("Recording {} for session {} has been uploaded", recording.getId(), recording.getSessionId());
         successCallback.run();
     }
 
