@@ -4,7 +4,7 @@
 OPENVIDU_FOLDER=openvidu
 OPENVIDU_VERSION=master
 OPENVIDU_UPGRADABLE_VERSION="2.16"
-DOWNLOAD_URL=https://raw.githubusercontent.com/OpenVidu/openvidu/${OPENVIDU_VERSION}
+DOWNLOAD_URL=https://raw.githubusercontent.com/moboa/openvidu/${OPENVIDU_VERSION}
 
 fatal_error() {
      printf "\n     =======¡ERROR!======="
