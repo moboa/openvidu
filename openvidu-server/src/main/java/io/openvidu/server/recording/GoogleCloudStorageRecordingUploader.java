@@ -37,10 +37,12 @@ public class GoogleCloudStorageRecordingUploader implements RecordingUploader {
         try {
             gcpStorage.create(blobInfo, Files.readAllBytes(Paths.get(filePath)));
         } catch (StorageException | IOException e) {
+            log.error(e.getMessage(), e);
             log.error("Error uploading recording {} for session {}", recording.getId(), recording.getSessionId());
+            errorCallback.run();
+            return;
         } finally {
             recordingsBeingCurrentlyUploaded.remove(recording.getId());
-            errorCallback.run();
         }
         log.info("Recording {} for session {} has been uploaded", recording.getId(), recording.getSessionId());
         successCallback.run();
