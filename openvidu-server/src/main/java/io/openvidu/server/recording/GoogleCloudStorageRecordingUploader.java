@@ -31,7 +31,8 @@ public class GoogleCloudStorageRecordingUploader implements RecordingUploader {
         recordingsBeingCurrentlyUploaded.add(recording.getId());
 
         String bucketName = config.getGcpStorageBucketName();
-        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, recording.getName())).build();
+        String gcpFilename = recording.getName() + getRecordingFileExtension(recording);
+        BlobInfo blobInfo = BlobInfo.newBuilder(BlobId.of(bucketName, gcpFilename)).build();
         String filePath = getComposedRecordingLocalFilePath(recording);
 
         try {
@@ -50,8 +51,12 @@ public class GoogleCloudStorageRecordingUploader implements RecordingUploader {
 
     private String getComposedRecordingLocalFilePath(Recording recording) {
         // Audio-only recordings are in WEBM file format
-        String fileExt = recording.hasVideo() ? ".mp4" : ".webm";
+        String fileExt = getRecordingFileExtension(recording);
         return config.getOpenViduRecordingPath() + "/" + recording.getId() + "/" + recording.getName() + fileExt;
+    }
+
+    private String getRecordingFileExtension(Recording recording) {
+        return recording.hasVideo() ? ".mp4" : ".webm";
     }
 
     // Prevent uploading recordings from being retrieved from REST API with "ready"
